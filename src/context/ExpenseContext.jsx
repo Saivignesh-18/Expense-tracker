@@ -1,4 +1,5 @@
-import { createContext, useContext, useReducer } from "react";
+import { createContext, useContext, useReducer, useEffect } from "react";
+import API from "../api";
 
 const ExpenseContext = createContext();
 
@@ -13,30 +14,35 @@ const CATEGORIES = {
 };
 
 const initialState = {
-  expenses: [
-    { id: 1, title: "Lunch at Café", amount: 450, category: "food", date: "2026-05-28", note: "Team lunch" },
-    { id: 2, title: "Uber ride", amount: 180, category: "transport", date: "2026-05-27", note: "" },
-    { id: 3, title: "Netflix subscription", amount: 649, category: "entertainment", date: "2026-05-26", note: "Monthly" },
-    { id: 4, title: "Grocery run", amount: 1250, category: "food", date: "2026-05-25", note: "Big Bazaar" },
-    { id: 5, title: "Electricity bill", amount: 2100, category: "utilities", date: "2026-05-24", note: "May bill" },
-    { id: 6, title: "Gym membership", amount: 1500, category: "health", date: "2026-05-23", note: "" },
-    { id: 7, title: "New headphones", amount: 3499, category: "shopping", date: "2026-05-22", note: "Sony WH-1000XM5" },
-    { id: 8, title: "Doctor visit", amount: 600, category: "health", date: "2026-05-20", note: "General checkup" },
-  ],
-  budget: 15000,
+  expenses: [],
+  budget: Number(localStorage.getItem("budget")) || 15000,
   filter: "all",
 };
 
 function reducer(state, action) {
   switch (action.type) {
+    case "SET_EXPENSES":
+      return { ...state, expenses: action.payload };
+
     case "ADD_EXPENSE":
-      return { ...state, expenses: [{ ...action.payload, id: Date.now() }, ...state.expenses] };
+      return { ...state, expenses: [action.payload, ...state.expenses] };
+
     case "DELETE_EXPENSE":
-      return { ...state, expenses: state.expenses.filter((e) => e.id !== action.payload) };
+      return {
+        ...state,
+        expenses: state.expenses.filter((e) => e.id !== action.payload),
+      };
+
+    case "UPDATE_EXPENSE":
+      return {...state,expenses: state.expenses.map((e) =>e.id === action.payload.id ? action.payload : e),};
+
     case "SET_BUDGET":
-      return { ...state, budget: action.payload };
+      localStorage.setItem("budget", action.payload);
+      return { ...state, budget: Number(action.payload) };
+
     case "SET_FILTER":
       return { ...state, filter: action.payload };
+
     default:
       return state;
   }
@@ -45,21 +51,85 @@ function reducer(state, action) {
 export function ExpenseProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const totalSpent = state.expenses.reduce((sum, e) => sum + e.amount, 0);
+  useEffect(() => {
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  API.get(`/expenses?user_id=${user.id}`)
+    .then((res) => {
+      dispatch({ type: "SET_EXPENSES", payload: res.data });
+    })
+    .catch((err) => console.log(err));
+}, []);
+
+  const addExpense = async (expense) => {
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const res = await API.post("/expenses", {
+    ...expense,
+    user_id: user.id,
+  });
+
+  dispatch({
+    type: "ADD_EXPENSE",
+    payload: res.data.expense,
+  });
+};
+
+  const deleteExpense = async (id) => {
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  await API.delete(`/expenses/${id}?user_id=${user.id}`);
+
+  dispatch({
+    type: "DELETE_EXPENSE",
+    payload: id,
+  });
+};
+
+  const updateExpense = async (id, updatedExpense) => {
+  const res = await API.put(`/expenses/${id}`, updatedExpense);
+
+  dispatch({
+    type: "UPDATE_EXPENSE",
+    payload: res.data.expense,
+  });
+};
+
+  const totalSpent = state.expenses.reduce((sum, e) => sum + Number(e.amount), 0);
   const remaining = state.budget - totalSpent;
   const percentUsed = Math.min((totalSpent / state.budget) * 100, 100);
 
-  const byCategory = Object.keys(CATEGORIES).map((key) => ({
-    key,
-    ...CATEGORIES[key],
-    total: state.expenses.filter((e) => e.category === key).reduce((s, e) => s + e.amount, 0),
-  })).filter((c) => c.total > 0);
+  const byCategory = Object.keys(CATEGORIES)
+    .map((key) => ({
+      key,
+      ...CATEGORIES[key],
+      total: state.expenses
+        .filter((e) => e.category === key)
+        .reduce((s, e) => s + Number(e.amount), 0),
+    }))
+    .filter((c) => c.total > 0);
 
   const filteredExpenses =
-    state.filter === "all" ? state.expenses : state.expenses.filter((e) => e.category === state.filter);
+    state.filter === "all"
+      ? state.expenses
+      : state.expenses.filter((e) => e.category === state.filter);
 
   return (
-    <ExpenseContext.Provider value={{ state, dispatch, totalSpent, remaining, percentUsed, byCategory, filteredExpenses, CATEGORIES }}>
+    <ExpenseContext.Provider
+    value={{
+  state,
+  dispatch,
+  addExpense,
+  deleteExpense,
+  updateExpense,
+  totalSpent,
+  remaining,
+  percentUsed,
+  byCategory,
+  filteredExpenses,
+  CATEGORIES,
+}}
+    >
       {children}
     </ExpenseContext.Provider>
   );

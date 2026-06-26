@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useExpense } from "../context/ExpenseContext";
 
-export default function Header({ onAdd }) {
+export default function Header({ onAdd, onLogout }) {
   const { state, dispatch } = useExpense();
   const [localBudget, setLocalBudget] = useState(state.budget);
 
@@ -47,6 +47,9 @@ export default function Header({ onAdd }) {
         </div>
         <button className="add-btn" onClick={onAdd}>
           <span>+</span> Add Expense
+        </button>
+        <button className="logout-btn" onClick={onLogout}>
+          Logout
         </button>
       </div>
     </header>

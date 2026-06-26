@@ -4,18 +4,24 @@ import { useExpense, CATEGORIES } from "../context/ExpenseContext";
 const today = new Date().toISOString().split("T")[0];
 
 export default function AddExpenseModal({ onClose }) {
-  const { dispatch } = useExpense();
+  const { addExpense } = useExpense();
   const [form, setForm] = useState({ title: "", amount: "", category: "food", date: today, note: "" });
   const [error, setError] = useState("");
 
   const set = (field) => (e) => setForm({ ...form, [field]: e.target.value });
 
-  const handleSubmit = () => {
-    if (!form.title.trim()) return setError("Title is required.");
-    if (!form.amount || isNaN(form.amount) || Number(form.amount) <= 0) return setError("Enter a valid amount.");
-    dispatch({ type: "ADD_EXPENSE", payload: { ...form, amount: Number(form.amount) } });
-    onClose();
-  };
+  const handleSubmit = async () => {
+  if (!form.title.trim()) return setError("Title is required.");
+  if (!form.amount || isNaN(form.amount) || Number(form.amount) <= 0)
+    return setError("Enter a valid amount.");
+
+  await addExpense({
+    ...form,
+    amount: Number(form.amount),
+  });
+
+  onClose();
+};
 
   return (
     <div className="modal-overlay" onClick={onClose}>
