@@ -1,76 +1,172 @@
-# ◈ SPENT — Smart Expense Tracker
+# 💰 Smart Expense Tracker
 
-A component-based expense tracker built with React + Vite, featuring a dark editorial UI with INR currency support.
-
----
-
-## 🗂️ Project Structure
-
-```
-src/
-├── App.jsx                      # Root component, modal state
-├── App.css                      # All global styles + responsive rules
-├── main.jsx                     # React DOM entry point
-│
-├── context/
-│   └── ExpenseContext.jsx       # Global state via useReducer + Context API
-│
-├── components/
-│   ├── Dashboard.jsx            # Layout orchestrator
-│   ├── Header.jsx               # Logo, budget input, Add button
-│   ├── SummaryCards.jsx         # 4 KPI cards (spent, remaining, avg, count)
-│   ├── BudgetMeter.jsx          # Segmented bar + legend
-│   ├── CategoryBreakdown.jsx    # Per-category bar cards (clickable filter)
-│   ├── FilterBar.jsx            # Category pill filters
-│   ├── ExpenseList.jsx          # Filtered list container
-│   ├── ExpenseItem.jsx          # Single expense row
-│   └── AddExpenseModal.jsx      # Add expense form modal
-│
-└── utils/
-    └── format.js                # formatCurrency (INR) + formatDate helpers
-```
+A full-stack Expense Tracker application built using **React**, **Flask**, and **SQLite**. The application allows users to register, log in securely, and manage their personal expenses with complete CRUD functionality.
 
 ---
 
-## ⚡ Setup & Run
+## 🌐 Live Demo
+
+### Frontend
+https://expense-tracker-six-zeta-50.vercel.app/
+
+### Backend API
+https://expense-tracker-2-qfdt.onrender.com
+
+---
+
+## ✨ Features
+
+- 🔐 User Registration & Login
+- 🔒 Secure Password Hashing
+- ➕ Add New Expenses
+- ✏️ Update Existing Expenses
+- 🗑️ Delete Expenses
+- 👤 User-specific Expense Management
+- 💰 Monthly Budget Management
+- 📅 Expense Date Tracking
+- 📝 Notes for Expenses
+- 📂 Category-wise Expense Tracking
+- ⚡ REST API using Flask
+- 📱 Responsive User Interface
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- React
+- Vite
+- JavaScript
+- HTML5
+- CSS3
+- Axios
+
+### Backend
+- Flask
+- Flask SQLAlchemy
+- Flask CORS
+- SQLite
+- Werkzeug
+
+---
+
+## 📂 Project Structure
+
+```
+expense-tracker
+│
+├── src/
+│   ├── components/
+│   ├── context/
+│   ├── utils/
+│   ├── api.js
+│   └── App.jsx
+│
+├── app.py
+├── requirements.txt
+├── Procfile
+├── package.json
+└── README.md
+```
+
+---
+
+## 🚀 Installation
+
+### Clone the Repository
+
+git clone https://github.com/Saivignesh-18/Expense-tracker
+
+
+Move into the project directory
+
+```bash
+cd expense-tracker
+```
+
+---
+
+## Backend Setup
+
+Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+Run the Flask server
+
+```bash
+python app.py
+```
+
+Backend runs on
+
+```
+http://127.0.0.1:5000
+```
+
+---
+
+## Frontend Setup
+
+Install dependencies
 
 ```bash
 npm install
+```
+
+Start the development server
+
+```bash
 npm run dev
+```
+
+Frontend runs on
+
+```
+http://localhost:5173
 ```
 
 ---
 
-## 🧩 Features
+## REST API Endpoints
 
-| Feature | Details |
-|---|---|
-| Global State | `useReducer` + React Context (no external library) |
-| Add Expenses | Modal with title, amount, category, date, note |
-| Delete Expenses | Per-row delete button |
-| Category Filter | Filter bar + clickable category cards |
-| Budget Tracking | Editable monthly budget, segmented meter bar |
-| Summary Cards | Total spent, remaining, daily avg, transaction count |
-| Responsive | 3-tier breakpoints: desktop / tablet / mobile |
-| Currency | INR formatting via `Intl.NumberFormat` |
-| Animations | Slide-in on add, hover lifts, modal fade |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /register | Register a new user |
+| POST | /login | Login user |
+| GET | /expenses | Get user expenses |
+| POST | /expenses | Add expense |
+| PUT | /expenses/:id | Update expense |
+| DELETE | /expenses/:id | Delete expense |
 
 ---
 
-## 🎨 Design Choices
+---
 
-- **Font**: Syne (display, 800 weight) + DM Mono (numbers/labels)
-- **Theme**: Dark editorial — `#0e0e10` base, teal accent `#4ECDC4`
-- **Colors per category**: Each category has its own accent color used consistently in meter, cards, and list rows
-- **No external UI library**: Pure CSS, zero dependencies beyond React
+## Future Improvements
+
+- 📊 Expense Charts
+- 📈 Analytics Dashboard
+- 📄 Export PDF
+- 📊 Export Excel
+- 🌙 Dark Mode
+- 📅 Monthly Reports
+- 🔍 Search & Filters
+- ☁️ PostgreSQL Database
+- 📱 Mobile Responsive Improvements
 
 ---
 
-## 🔌 State Actions
+## Author
 
-| Action Type | Payload |
-|---|---|
-| `ADD_EXPENSE` | `{ title, amount, category, date, note }` |
-| `DELETE_EXPENSE` | expense `id` |
-| `SET_BUDGET` | number |
-| `SET_FILTER` | category key or `"all"` |
+Sai vignesh reddy
+
+GitHub: https://github.com/Saivignesh-18
+
+---
+
+## License
+
+This project is developed for learning, portfolio, and educational purposes.
