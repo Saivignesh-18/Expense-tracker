@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-    baseURL: "http://127.0.0.1:5000"
+  baseURL: "https://expense-tracker-2-qfdt.onrender.com",
 });
 
 export default API;
